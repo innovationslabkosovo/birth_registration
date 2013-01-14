@@ -1,0 +1,358 @@
+{% extends "registration/base.html" %}
+{% load forms_tags %}
+{% load loop_tags %}
+
+{% block stylesheets %}
+{{ block.super }}
+<link type="text/css" rel="stylesheet" href="{{ MEDIA_URL }}registration/stylesheets/dashboard.css" />
+{% endblock %}
+
+{% block javascripts %}
+{{ block.super }}
+<script src="http://code.highcharts.com/highcharts.js"></script>
+   <script src="http://code.highcharts.com/modules/exporting.js"></script>
+   <script src="http://d3js.org/d3.v3.min.js"></script>
+
+<script type="text/javascript">
+	bp_cats = []
+
+      var loc = "Kosovo"; 
+      var getmales ={};
+      var getfemales ={};
+	var munic_axis = [];
+	var i=0;
+
+      {% for key, value in male_list.items %} 
+                            
+            getmales["{{key}}"] = {"bp1":{{value.bp1}},"bp2":{{value.bp2}},"bp3":{{value.bp3}},"bp4":{{value.bp4}},"bp5":{{value.bp5}}};
+     
+            i++;
+
+      {% endfor %}  
+
+       {% for key, value in female_list.items %} 
+                            
+            getfemales["{{key}}"] = {"bp1":{{value.bp1}},"bp2":{{value.bp2}},"bp3":{{value.bp3}},"bp4":{{value.bp4}},"bp5":{{value.bp5}}};
+     
+            i++;
+
+      {% endfor %}  
+    
+
+      i=0
+	{% for m in municipalities %}	
+
+            munic_axis[i] = "{{m}}";
+            i++;
+	{% endfor %}	
+            
+             i=0;
+      {% for bp in birthplaces %}           
+
+            bp_cats[i] = "{{bp.birth_place}}";
+            i++;
+      {% endfor %}    
+
+      $(function () {
+        var chart, ser, ser1;
+         
+    $(document).ready(function() {
+
+
+
+        function setChart(name, categories, data, color, series,loc) {
+            chart.xAxis[0].setCategories(categories, false);
+            chart.setTitle({text: "Number of unregistered children in "+loc+", grouped by gender"});
+            
+
+            series.hide();
+       
+            chart.addSeries({
+                name: name,
+                data: data,
+                stack:'male2',
+             //   series:chart.series
+                color: color || 'red'
+            }, false);        
+                    chart.redraw();
+            }
+
+            function oldChart(){        
+                alert("a");
+                 ser.show();
+                ser1.show();
+            
+                chart.redraw();
+
+            }
+
+        var colors = Highcharts.getOptions().colors;
+
+        chart = new Highcharts.Chart({
+
+            chart: {
+                renderTo: 'container',
+                type: 'column'
+            },
+    
+            title: {
+                text: 'Number of unregistered children in '+loc+', grouped by gender'
+            },
+    
+            xAxis: {
+                categories: munic_axis
+            },
+    
+            yAxis: {
+                allowDecimals: false,
+                min: 0,
+                title: {
+                    text: 'Number of unregistered children'
+                }
+            },
+    
+            tooltip: {
+                formatter: function() {
+                    return '<b>'+ this.x +'</b><br/>'+
+                        this.series.name +': '+ this.y +'<br/>'+
+                        'Total: '+ this.point.stackTotal;
+                }
+            },
+            legend: {
+
+                backgroundColor: '#FCFFC5',
+           
+            },
+    
+            plotOptions: {
+                column: {
+                    stacking: 'normal', 
+                    cursor:'pointer',
+                    point: {
+                        events: {
+                            click: function() {
+                             //   alert(this.x);
+                             
+                            if (this.color != "#A47D7C"){
+
+                                 var drilldown = this.drilldown;
+                                 cat = this.x;
+                                 if (drilldown) { // drill down
+                                 //   alert(this.x);
+                               //  alert(this.data[cat].drilldown.name);
+                                   $('.highcharts-legend').children().children().children().each(function(){
+                                        $(this).css("display","none");
+
+                                    });
+                                    $.each(chart.series, function(){
+                                        //alert(this.data[cat].drilldown.name);
+                                      //  alert(this.showInLegend);
+                                        if (drilldown.name == this.data[cat].drilldown.name ){
+                                        //   alert("aa");
+                                           setChart(this.name, this.data[cat].drilldown.categories , this.data[cat].drilldown.data, this.data[cat].color,this,this.data[cat].drilldown.name);                                          
+
+                                        }
+                                    });
+                                    
+                                  
+
+
+                                    } else { // restore
+                                    //alert(chart.series.data);
+                                          chart.setTitle({text: "Number of unregistered children in Kosovo, grouped by gender"}); 
+         
+                                         i=0;
+                                        $.each(chart.series, function(){
+                                            //alert(i);
+                                            if (i == 0 || i == 1 || i == 2)  {this.show(); i++;}                                    
+                                            else {chart.series[i].remove();}
+                                            
+                                            chart.xAxis[0].setCategories(munic_axis, false);
+                                            $('.highcharts-legend').children().children().children().each(function(){
+                                                 $(this).css("display","block");
+
+                                    });
+                                        });
+
+                                }
+                            }    
+
+
+                                }
+                            }
+                        }
+                    },
+                },
+    
+            series: [{
+
+                name: 'Male',
+                color:colors[0],
+                //categories:[]
+                data: [
+                {% for mun in municipalities %}     
+       
+                  {% if mun in male_munic %}
+                       //   alert("{{mun}}"),
+                           {
+                                
+                                y: getmales["{{mun}}"]["bp1"] + getmales["{{mun}}"]["bp2"] + getmales["{{mun}}"]["bp3"] + getmales["{{mun}}"]["bp4"] + getmales["{{mun}}"]["bp5"],
+                                color: colors[0],
+                                drilldown: {
+                                    name: '{{mun}}',
+                                    categories: bp_cats,
+                                    data: [getmales["{{mun}}"]["bp1"], getmales["{{mun}}"]["bp2"],  getmales["{{mun}}"]["bp3"], getmales["{{mun}}"]["bp4"], getmales["{{mun}}"]["bp5"]],
+                                    color: colors[0]
+                                }
+                        },
+                          {{ forloop|continue }}
+                    {% else %}
+
+                          {                                    
+                                    y: 0,
+                                    color: colors[0],
+                                    drilldown: {
+                                        name: '{{mun}}',
+                                        categories: bp_cats,
+                                        data: [0,0,0,0,0],
+                                        color: colors[0]
+                                    }
+                            },
+
+                  {% endif %}
+
+                
+                {% endfor %}
+
+               ],
+                stack: 'male'
+            }, {
+                
+                name: 'Female',
+                color:colors[1],
+               data: [
+                {% for mun in municipalities %}     
+       
+                  {% if mun in female_munic %}
+                       //   alert("{{mun}}"),
+                           {
+                                
+                                y: getfemales["{{mun}}"]["bp1"] + getfemales["{{mun}}"]["bp2"] + getfemales["{{mun}}"]["bp3"] + getfemales["{{mun}}"]["bp4"] + getfemales["{{mun}}"]["bp5"],
+                                color: colors[1],
+                                drilldown: {
+                                    name: '{{mun}}',
+                                    categories: bp_cats,
+                                    data: [getfemales["{{mun}}"]["bp1"], getfemales["{{mun}}"]["bp2"],  getfemales["{{mun}}"]["bp3"], getfemales["{{mun}}"]["bp4"], getfemales["{{mun}}"]["bp5"]],
+                                    color: colors[1]
+                                }
+                        },
+                          {{ forloop|continue }}
+                    {% else %}
+
+                          {                                    
+                                    y: 0,
+                                    color: colors[1],
+                                    drilldown: {
+                                        name: '{{mun}}',
+                                        categories: bp_cats,
+                                        data: [0,0,0,0,0],
+                                        color: colors[1]
+                                    }
+                            },
+
+                  {% endif %}
+
+                
+                {% endfor %}
+
+               ],
+                stack: 'male'
+            }
+            , {
+                
+                name: 'Not Available',
+                color:colors[7],
+                data: [
+
+                {% for mun in municipalities %}
+                  //     alert("{{mun}}"),
+                    {% for oc in old_cases %}
+               //     alert("{{mun}}"),
+                      {% if oc.municipality_name == mun %}
+                        
+                  //    alert("ok"),
+                          
+                        //  alert("{{forloop.parentloop.counter}}"),
+                         {
+                                
+                                y: {% if oc.nchildren == None %} 0,
+                                    {% else %} {{ oc.nchildren }},
+                                    {% endif %}
+                                color: colors[7],
+                                drilldown: {
+                                    name: '{{mun}}',
+                                    categories: bp_cats,
+                                    data: [0,0,0,0,0],
+                                    color: colors[2]
+                                }
+                        },
+                {{ forloop|break }}
+                {% endif %}
+                        {% if forloop.counter0 == forloop.parentloop.counter0 %}
+                      //    alert("{{forloop.counter0}}"),
+          
+                            {% if oc.municipality_name != mun %}
+                         
+                             {                                    
+                                    y: 0,
+                                    color: colors[7],
+                                    drilldown: {
+                                        name: '{{mun}}',
+                                        categories: bp_cats,
+                                        data: [0,0,0,0,0],
+                                        color: colors[2]
+                                    }
+                            },  
+                       
+                        
+                                {% endif %}
+
+                        
+                       {% endif %}
+                
+                  {% endfor %}
+                {% endfor %}
+
+               ],
+                stack: 'male'
+            }],
+            exporting: {
+                enabled: false
+            }
+        });
+    });
+    
+})
+
+
+   </script>
+
+
+
+{% endblock %}
+
+{% block left %}
+<div class="module">
+	<h2>Data Visualization</h2>
+	<div id="container" style="min-width: 400px; height: 400px; margin: 0 auto"></div>
+</div>
+{% endblock %}
+
+{% block right %}
+<div class="module">
+	
+</div>
+<div class="module collapsed">
+        
+</div>
+{% endblock %}
