@@ -12,7 +12,7 @@ The release of rapidsms-birthreg is designed to work with Django 1.3 and higher 
 
 Template Integration
 --------------------
-To integrate templates for the birthreg app:
+#### To integrate templates for the birthreg app:
 
 - Create a “templates” folder inside your rapidsms project
 - Specify template folder in settings.py file
