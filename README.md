@@ -24,12 +24,12 @@ Template Integration
 TEMPLATE_DIRS = (
    os.path.join(os.getcwd(), "templates"),
 )
-- Specify url patterns to match the view function in views.py file
+- ####Specify url patterns to match the view function in views.py file
 urlpatterns = patterns('',
 (r'^locations/', birthreg.views.locations), 
 )
 - Link view function with the html file
-def locations(req):
+<cod>def locations(req):
         …
         …
         …
@@ -38,13 +38,4 @@ def locations(req):
                     …
                     …
               }
-
-
-        cd path-to-webserver-document-root-directory
-        chmod -R 777 application/config
-        chmod -R 777 application/cache
-        chmod -R 777 application/logs
-        chmod -R 777 media/uploads
-        chmod 777 .htaccess
-        
-    __NOTE: The process of configuring file permissions is different for various operating systems. Here are some helpful links about permissions for the Windows (http://support.microsoft.com/kb/308419) and Unix (http://www.washington.edu/computing/unix/permissions.html) operating systems.__
+</code>
