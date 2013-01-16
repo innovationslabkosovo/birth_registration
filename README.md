@@ -24,12 +24,13 @@ Template Integration
 TEMPLATE_DIRS = (
    os.path.join(os.getcwd(), "templates"),
 )
-- ####Specify url patterns to match the view function in views.py file
+- Specify url patterns to match the view function in views.py file
 urlpatterns = patterns('',
 (r'^locations/', birthreg.views.locations), 
 )
 - Link view function with the html file
-<cod>def locations(req):
+<code>
+def locations(req):
         …
         …
         …
@@ -37,5 +38,5 @@ urlpatterns = patterns('',
                  "birthreg/locations.html", {       
                     …
                     …
-              }
+        }
 </code>
