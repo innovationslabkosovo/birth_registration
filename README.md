@@ -18,8 +18,8 @@ Template Integration
 
 1. Create a “templates” folder inside your rapidsms project
 2. Specify template folder in settings.py file<br>
-<pre>
 <code>
+<pre>
 TEMPLATE_LOADERS = (
   'django.template.loaders.filesystem.Loader',
   'django.template.loaders.app_directories.Loader',
@@ -27,8 +27,8 @@ TEMPLATE_LOADERS = (
 TEMPLATE_DIRS = (
  os.path.join(os.getcwd(), "templates"),
 )
-</code>
 </pre>
+</code>
 
 #### 3. Specify url patterns to match the view function in views.py file
 
