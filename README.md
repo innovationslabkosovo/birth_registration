@@ -38,3 +38,13 @@ def locations(req):
                     …
                     …
               }
+
+
+        cd path-to-webserver-document-root-directory
+        chmod -R 777 application/config
+        chmod -R 777 application/cache
+        chmod -R 777 application/logs
+        chmod -R 777 media/uploads
+        chmod 777 .htaccess
+        
+    __NOTE: The process of configuring file permissions is different for various operating systems. Here are some helpful links about permissions for the Windows (http://support.microsoft.com/kb/308419) and Unix (http://www.washington.edu/computing/unix/permissions.html) operating systems.__
